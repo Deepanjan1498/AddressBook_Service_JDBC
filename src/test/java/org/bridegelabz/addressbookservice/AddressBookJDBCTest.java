@@ -11,6 +11,7 @@ package org.bridegelabz.addressbookservice;
 
 import static org.junit.Assert.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.bridegelabz.addressbookjdbc.AddressBookData;
@@ -38,5 +39,17 @@ public class AddressBookJDBCTest {
 		addressBookService.updateContactDetails("Sumit","Bhagalpur",896542);
 		boolean result=addressBookService.checkAddressBookInSyncWithDB("Sumit");
 		Assert.assertTrue(result);
+    }
+	@Test
+    public void givenAddressBookDataInDB_WhenRetrievedForGivenDate_ShouldSyncWithDB() throws AddressBookJDBCException
+    {
+    	List<AddressBookData> addressbookdata;
+    	AddressBookService addressBookService = new AddressBookService();
+		addressbookdata =addressBookService.readAddressBookData();
+		LocalDate startDate = LocalDate.parse("2018-11-01");
+		LocalDate endDate = LocalDate.parse("2019-11-04");
+		List<AddressBookData> matchingRecords = addressBookService
+				.getAddressBookDataByStartDate(startDate, endDate);
+		Assert.assertEquals(matchingRecords.get(0),addressBookService.getAddressBookData("Kanishk"));
     }
 }
