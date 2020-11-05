@@ -50,6 +50,6 @@ public class AddressBookJDBCTest {
 		LocalDate endDate = LocalDate.parse("2019-11-04");
 		List<AddressBookData> matchingRecords = addressBookService
 				.getAddressBookDataByStartDate(startDate, endDate);
-		Assert.assertEquals(matchingRecords.get(0),addressBookService.getAddressBookData("Kanishk"));
+		Assert.assertEquals(matchingRecords.get(0),addressBookService.getAddressBookData("Sandeep"));
     }
 }
