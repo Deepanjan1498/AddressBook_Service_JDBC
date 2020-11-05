@@ -59,7 +59,7 @@ public class AddressBookJDBCTest {
 		LocalDate date = LocalDate.of(2020, 02, 20);
 		addressBookService.addContactToDatabase("Uttam", "Singh", "Karol Bagh", "Delhi", "Delhi", 400012,
 				99087454, "asgsh45@gmail.com", "Family");
-		boolean result = addressBookService.checkAddressBookInSyncWithDB("Eric");
+		boolean result = addressBookService.checkAddressBookInSyncWithDB("Uttam");
 		Assert.assertTrue(result);
 	}
 }
