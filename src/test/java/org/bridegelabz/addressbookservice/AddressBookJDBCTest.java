@@ -52,4 +52,14 @@ public class AddressBookJDBCTest {
 		Map<String, Integer> contactByCityOrStateMap = addressBookService.readContactByCityOrState();
 		Assert.assertEquals(true, contactByCityOrStateMap.get("California").equals(5));
 	}
+	@Test
+	public void givenNewContact_WhenAdded_ShouldSyncWithDB() throws AddressBookJDBCException {
+		AddressBookService addressBookService = new AddressBookService();
+		addressBookService.readAddressBookData();
+		LocalDate date = LocalDate.of(2020, 02, 20);
+		addressBookService.addContactToDatabase("Uttam", "Singh", "Karol Bagh", "Delhi", "Delhi", 400012,
+				99087454, "asgsh45@gmail.com", "Family");
+		boolean result = addressBookService.checkAddressBookInSyncWithDB("Eric");
+		Assert.assertTrue(result);
+	}
 }
