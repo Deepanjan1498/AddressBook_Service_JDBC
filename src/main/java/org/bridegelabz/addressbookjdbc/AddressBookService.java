@@ -2,6 +2,7 @@ package org.bridegelabz.addressbookjdbc;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public class AddressBookService {
 public AddressBookJDBCService addressbookJDBCService;
@@ -39,4 +40,10 @@ private List<AddressBookData> addressBookDataList;
 	public List<AddressBookData> getAddressBookDataByStartDate(LocalDate startDate, LocalDate endDate)throws AddressBookJDBCException {
 		return this.addressbookJDBCService.getAdressBookDataByStartingDate(startDate, endDate);
 	}
+
+	public Map<String, Integer> readContactByCityOrState() throws AddressBookJDBCException {
+		return this.addressbookJDBCService.getContactsByCityOrState();
+		
+	}
+
 }
