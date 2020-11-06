@@ -1,6 +1,7 @@
 package org.bridegelabz.addressbookjdbc;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,7 +56,8 @@ public class AddressBookJDBCService {
 				String email_id=resultSet.getString("email_id");
 				String addressbook_name=resultSet.getString("addressbook_name");
 				String addressbook_type=resultSet.getString("addressbook_type");
-				addressBookList.add(new AddressBookData(first_name, last_name, address, city, state, zip, phone_number, email_id, addressbook_name, addressbook_type));
+				java.sql.Date date=resultSet.getDate("date_added");
+				addressBookList.add(new AddressBookData(first_name, last_name, address, city, state, zip, phone_number, email_id, addressbook_name, addressbook_type,date));
 			}
 		} catch (SQLException e) {
 			throw new AddressBookJDBCException("Unable to retrieve data");
@@ -64,7 +66,7 @@ public class AddressBookJDBCService {
 	}
 	public int updateAddressBookDataUsingPreparedStatement(String state,int zip,String name) throws AddressBookJDBCException 
 	{
-		String query = "update addressbook set state = ? , zip = ? where first_name = ?";
+		String query = "UPDATE addressbook SET state = ? , zip = ? where first_name = ?";
 		try(Connection con = this.getConnection()) {
 			PreparedStatement preparedStatement = con.prepareStatement(query);
 			preparedStatement.setString(1, state);
@@ -99,7 +101,8 @@ public class AddressBookJDBCService {
 				String email_id=resultSet.getString("email_id");
 				String addressbook_name=resultSet.getString("addressbook_name");
 				String addressbook_type=resultSet.getString("addressbook_type");
-				addressBookList.add(new AddressBookData(first_name, last_name, address, city, state, zip, phone_number, email_id, addressbook_name, addressbook_type));
+				java.sql.Date date=resultSet.getDate("date_added");
+				addressBookList.add(new AddressBookData(first_name, last_name, address, city, state, zip, phone_number, email_id, addressbook_name, addressbook_type,date));
 			}
 		} catch (SQLException e) {
 			throw new AddressBookJDBCException("Unable to get data.Please check table for updation");
@@ -120,7 +123,8 @@ public class AddressBookJDBCService {
 				String email_id=resultSet.getString("email_id");
 				String addressbook_name=resultSet.getString("addressbook_name");
 				String addressbook_type=resultSet.getString("addressbook_type");
-				addressBookList.add(new AddressBookData(first_name, last_name, address, city, state, zip, phone_number, email_id, addressbook_name, addressbook_type));
+				java.sql.Date date=resultSet.getDate("date_added");
+				addressBookList.add(new AddressBookData(first_name, last_name, address, city, state, zip, phone_number, email_id, addressbook_name, addressbook_type,date));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -130,7 +134,7 @@ public class AddressBookJDBCService {
 		
 	public List<AddressBookData> getAdressBookDataByStartingDate(LocalDate startDate, LocalDate endDate)
 			throws AddressBookJDBCException {
-		String sql = String.format("select * from addressbook where date_added between cast('%s' as date) and cast('%s' as date);",
+		String sql = String.format("SELECT * FROM addressbook WHERE date_added BETWEEN cast('%s' as date) and cast('%s' as date);",
 				startDate.toString(), endDate.toString());
 		try (Connection connection = this.getConnection()) {
 			Statement statement = connection.createStatement();
@@ -164,44 +168,90 @@ public class AddressBookJDBCService {
 		}
 		return contactByCityOrStateMap;
 	}
-	public AddressBookData addContact(String firstName, String lastName, String address, String city, String state, int zip,
-			long phone, String email, String type) throws AddressBookJDBCException {
+	public void addContact(String firstName, String lastName, String address, String city, String state, int zip,
+			long phone, String email, String addressBookName,String addressBookType,Date dateAdded) throws AddressBookJDBCException {
 		Connection connection = null;
+		connection = this.getConnection();
 		try {
-			connection = this.getConnection();
 			connection.setAutoCommit(false);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new AddressBookJDBCException("Unable to AutoCommit");
 		}
 
-		try {
-			Statement statement = connection.createStatement();
+		try(Statement statement = connection.createStatement())
+		{	
 			String sql = String.format(
-					"INSERT INTO addressbook_sevice(first_name,last_name,address,city,state,zip,phone,email,type) VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
-					firstName, lastName, address, city, state, zip, phone, email, type);
+					"INSERT INTO addressbook_sevice "
+					+ "VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
+					firstName, lastName, address, city, state, zip, phone, email, dateAdded);
 			statement.executeUpdate(sql);
 		} catch (SQLException e) {
-			e.printStackTrace();
 			try {
 				connection.rollback();
 			} catch (SQLException e1) {
-				e.printStackTrace();
+				throw new AddressBookJDBCException("Unable to Roll back");
 			}
+			throw new AddressBookJDBCException("Unable to get data.Please check table for updation");
 		}
 
+		try(Statement statement = connection.createStatement())
+		 { String sql = String.format("INSERT INTO address_details_and_bookname " + 
+					"VALUES ('%s', '%s')", email, addressBookName);
+			statement.executeUpdate(sql);
+		} catch (SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				throw new AddressBookJDBCException("Unable to Roll Back in addressbook_name");
+			}
+			throw new AddressBookJDBCException("Unable to get data.Please check table for updation in address_name");
+		} 
 		try {
 			connection.commit();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new AddressBookJDBCException("Unable to commit");
 		} finally {
-			if (connection != null) {
+			if(connection != null)
 				try {
 					connection.close();
 				} catch (SQLException e) {
+					throw new AddressBookJDBCException("Unable to get data.Please check table for updation");
+				}
+		}
+		addressBookDataObj.add(new AddressBookData(firstName, lastName, address, city, state, zip, phone, email, addressBookName, addressBookType,dateAdded));
+	}
+	public void addContactToDBWithThreads(List<AddressBookData> asList) {
+		Map<Integer,Boolean> addressAdditionStatus=new HashMap<Integer,Boolean>();
+		addressBookDataObj.forEach(addressbookdata->
+		{
+			Runnable task=()->{
+				addressAdditionStatus.put(addressbookdata.hashCode(),false);
+				System.out.println("Contact Being Added:"+Thread.currentThread().getName());
+				try {
+					this.addContact(addressbookdata.getFirst_name(),addressbookdata.getLast_name(),addressbookdata.getAddress(),
+							addressbookdata.getCity(),addressbookdata.getState(),addressbookdata.getZip(),addressbookdata.getPhone_number(),
+							addressbookdata.getEmail_id(),addressbookdata.getAddressbook_name(),addressbookdata.getAddressbook_type(),addressbookdata.getDate());
+				} 
+				catch (AddressBookJDBCException e) {
 					e.printStackTrace();
 				}
+				addressAdditionStatus.put(addressbookdata.hashCode(),true);
+				System.out.println("Contact Added:"+Thread.currentThread().getName());
+			};
+			Thread thread=new Thread(task,addressbookdata.getFirst_name());
+			thread.start();
+		});
+		while(addressAdditionStatus.containsValue(false))
+		{
+			try {
+				Thread.sleep(10);
 			}
+			catch(InterruptedException e) {}
 		}
-		return new AddressBookData(firstName, lastName, address, city, state, zip, phone, email, type);
+		System.out.println(this.addressBookDataObj);
+	}
+	public int countEntries() {
+		// TODO Auto-generated method stub
+		return addressBookDataObj.size();
 	}
 }
