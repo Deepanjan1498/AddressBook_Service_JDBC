@@ -3,56 +3,56 @@ package org.bridegelabz.addressbookjdbc;
 import java.sql.Date;
 
 public class AddressBookData {
-	private String first_name;
-	private String last_name;
+	private String firstName;
+	private String lastName;
 	private String address;
 	private String city;
 	private String state;
 	private int zip;
-	private long phone_number;
-	private String email_id;
-	private String addressbook_name;
-	private String addressbook_type;
+	private long phoneNumber;
+	private String email;
+	private String addressbook_Name;
+	private String addressbook_Type;
 	private Date date;
 
-	public AddressBookData(String first_name, String last_name, String address, String city, String state, int zip,
-			long phone_number, String email_id, String addressbook_name, String addressbook_type, Date date) {
+	public AddressBookData(String firstName, String lastName, String address, String city, String state, int zip,
+			long phoneNumber, String email, String addressbook_Name, String addressbook_Type, Date date) {
 		super();
-		this.first_name = first_name;
-		this.last_name = last_name;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.address = address;
 		this.city = city;
 		this.state = state;
 		this.zip = zip;
-		this.phone_number = phone_number;
-		this.email_id = email_id;
-		this.addressbook_name = addressbook_name;
-		this.addressbook_type = addressbook_type;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.addressbook_Name = addressbook_Name;
+		this.addressbook_Type = addressbook_Type;
 		this.date = date;
 	}
 
 	@Override
 	public String toString() {
-		return "AddressBookData [first_name=" + first_name + ", last_name=" + last_name + ", address=" + address
-				+ ", city=" + city + ", state=" + state + ", zip=" + zip + ", phone_number=" + phone_number
-				+ ", email_id=" + email_id + ", addressbook_name=" + addressbook_name + ", addressbook_type="
-				+ addressbook_type + ", date=" + date + "]";
+		return "AddressBookData [firstName=" + firstName + ", lastName=" + lastName + ", address=" + address
+				+ ", city=" + city + ", state=" + state + ", zip=" + zip + ", phoneNumber=" + phoneNumber
+				+ ", email=" + email + ", addressbook_Name=" + addressbook_Name + ", addressbook_Type="
+				+ addressbook_Type + ", date=" + date + "]";
 	}
 
-	public String getFirst_name() {
-		return first_name;
+	public String getfirstName() {
+		return firstName;
 	}
 
-	public void setFirst_name(String first_name) {
-		this.first_name = first_name;
+	public void setfirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
-	public String getLast_name() {
-		return last_name;
+	public String getlastName() {
+		return lastName;
 	}
 
-	public void setLast_name(String last_name) {
-		this.last_name = last_name;
+	public void setlastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getAddress() {
@@ -87,36 +87,36 @@ public class AddressBookData {
 		this.zip = zip;
 	}
 
-	public long getPhone_number() {
-		return phone_number;
+	public long getphoneNumber() {
+		return phoneNumber;
 	}
 
-	public void setPhone_number(long phone_number) {
-		this.phone_number = phone_number;
+	public void setphoneNumber(long phoneNumber) {
+		this.phoneNumber = phoneNumber;
 	}
 
-	public String getEmail_id() {
-		return email_id;
+	public String getemail() {
+		return email;
 	}
 
-	public void setEmail_id(String email_id) {
-		this.email_id = email_id;
+	public void setemail(String email) {
+		this.email = email;
 	}
 
-	public String getAddressbook_name() {
-		return addressbook_name;
+	public String getaddressbook_Name() {
+		return addressbook_Name;
 	}
 
-	public void setAddressbook_name(String addressbook_name) {
-		this.addressbook_name = addressbook_name;
+	public void setaddressbook_Name(String addressbook_Name) {
+		this.addressbook_Name = addressbook_Name;
 	}
 
-	public String getAddressbook_type() {
-		return addressbook_type;
+	public String getaddressbook_Type() {
+		return addressbook_Type;
 	}
 
-	public void setAddressbook_type(String addressbook_type) {
-		this.addressbook_type = addressbook_type;
+	public void setaddressbook_Type(String addressbook_Type) {
+		this.addressbook_Type = addressbook_Type;
 	}
 	public Date getDate() {
 		return date;
@@ -125,17 +125,31 @@ public class AddressBookData {
 		this.date = date;
 	}
 
-	public AddressBookData(String first_name, String last_name, String address, String city, String state, int zip,
-			long phone_number, String email_id, String addressbook_type) {
+	public AddressBookData(String firstName, String lastName, String address, String city, String state, int zip,
+			long phoneNumber, String email, String addressbook_Name, String addressbook_Type) {
 		super();
-		this.first_name = first_name;
-		this.last_name = last_name;
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.address = address;
 		this.city = city;
 		this.state = state;
 		this.zip = zip;
-		this.phone_number = phone_number;
-		this.email_id = email_id;
-		this.addressbook_type = addressbook_type;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.addressbook_Name = addressbook_Name;
+		this.addressbook_Type = addressbook_Type;
 	}
+	public AddressBookData(String firstName, String lastName, String address, String city, String state, int zip,
+			long phoneNumber, String email) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.address = address;
+		this.city = city;
+		this.state = state;
+		this.zip = zip;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+	}
+
 }

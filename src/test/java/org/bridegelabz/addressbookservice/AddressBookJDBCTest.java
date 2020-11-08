@@ -13,11 +13,65 @@ import java.util.Map;
 import org.bridegelabz.addressbookjdbc.AddressBookData;
 import org.bridegelabz.addressbookjdbc.AddressBookJDBCException;
 import org.bridegelabz.addressbookjdbc.AddressBookJDBCService;
+import org.bridegelabz.addressbookjdbc.AddressBookRestService;
 import org.bridegelabz.addressbookjdbc.AddressBookService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import com.google.gson.Gson;
+
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+
 public class AddressBookJDBCTest {
+	
+	@Before
+	public void setup()
+	{
+		RestAssured.baseURI="http://localhost";
+		RestAssured.port=3000;
+	}
+
+	public AddressBookData[] getAddressBookContactList()
+	{
+		Response response=RestAssured.get("/Contacts");
+		System.out.println("Address Book Contact Entries In Json Server:\n"+response.asString());
+		AddressBookData[] contactsArray=new Gson().fromJson(response.asString(),AddressBookData[].class);
+		return contactsArray;
+	}
+    @Test
+    public void givenAddressBookInJsonServer_WhenCalled_ShouldMatchTheCount()
+    {
+        AddressBookData[] contactsArray=getAddressBookContactList();
+        AddressBookRestService addressBookRestService;
+        addressBookRestService=new AddressBookRestService(Arrays.asList(contactsArray));
+        long entries=addressBookRestService.countEntries();
+        Assert.assertEquals(3,entries);
+    }
+    @Test
+    public void givenEmployeeWhenAddedShouldMatch201ResponseAndCount()
+    {
+    	AddressBookService addressBookService;
+    	AddressBookData[] contactsArray=getAddressBookContactList();
+    	addressBookService=new AddressBookService(Arrays.asList(contactsArray));
+    	AddressBookData addressBookData=new AddressBookData("Sumit","Sharma","ghhee","Kolkata","West Bengal",235698,8965395,"dmfmf@gmail.com");
+    	Response response=addContactsToJsonServer(addressBookData);
+    	int HTTPstatusCode=response.getStatusCode();
+    	Assert.assertEquals(201,HTTPstatusCode);
+    	addressBookData=new Gson().fromJson(response.asString(),AddressBookData.class);
+    	addressBookService.addContactToAddressBookUsingRestServices(addressBookData);
+    	long entries=addressBookService.countEntries();
+    	Assert.assertEquals(4,entries);
+    }
+    public Response addContactsToJsonServer(AddressBookData addressBookData) {
+		String contacts=new Gson().toJson(addressBookData);
+		RequestSpecification request=RestAssured.given();
+		request.header("Content-Type","application/json");
+		request.body(contacts);
+		return request.post("/Contacts");
+	}
 	
 	@Test
     public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatchAddressBookEntriesCount() throws AddressBookJDBCException
